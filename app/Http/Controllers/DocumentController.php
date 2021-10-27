@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
 
 class DocumentController extends Controller
 {
@@ -15,23 +16,19 @@ class DocumentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index($value = null, $type = null)
+    public function index()
     {
-        $documents = Document::many($value, $type)->paginate(5);
-
-        return view('pages.documents', [
-        'documents' => $documents,
-        ]);
+        //
     }
 
     public function search(Request $request, $my = 2){
 
         if($my == 1)
-            $documents = Document::documents()->where('title', 'LIKE', "%{$request->value}%")->paginate(5);
+            $documents = Document::own()->where('title', 'LIKE', "%{$request->value}%")->paginate(5);
         else
             $documents = Document::many()->where('title', 'LIKE', "%{$request->value}%")->paginate(5);
 
-        return view('pages.documents', [
+        return view('pages.document.documents', [
             'documents' => $documents,
             'my' => $my
         ]);
@@ -39,12 +36,13 @@ class DocumentController extends Controller
 
 
     public function allFromUser($my = 2, $value = null, $type = null){
-        if($my == 1)
-            $documents = Document::documents($value, $type)->paginate(5);
+
+        if($my == 1)//документы конкретного польвователя
+            $documents = Document::own($value, $type)->paginate(5);
         else
             $documents = Document::many($value, $type)->paginate(5);
 
-        return view('pages.documents', [
+        return view('pages.document.documents', [
             'documents' => $documents,
             'my' => $my
         ]);
@@ -57,7 +55,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        return view('pages.form');
+        return view('pages.document.create');
     }
 
     /**
@@ -81,9 +79,8 @@ class DocumentController extends Controller
             'author' => Auth::id()
         ])){
 
-            return view('pages.form', [
-                'status' => [true]
-            ]);
+            return redirect()->route('document.many');
+
         }else{
             return redirect()->route('document.create');
         }
@@ -97,9 +94,7 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        return view('pages.show', [
-            'document' => $document
-        ]);
+        //
     }
 
     /**
@@ -111,7 +106,7 @@ class DocumentController extends Controller
     public function edit(Document $document)
     {
         Gate::authorize('update-document', [$document]);
-        return view('pages.edit', [
+        return view('pages.document.edit', [
             'document' => $document
         ]);
     }
@@ -131,13 +126,32 @@ class DocumentController extends Controller
             'author' => 'nullable'
         ]);
 
-        $document->update([
+        if($document->update([
             'title' => $request->title,
             'is_visible' => ($request->visible == 'on') ? true : false,
             'file' => ($request->file) ? $request->file('file')->store('documents') : $document->file,
-        ]);
+        ])){
+            return redirect()->route('document.many');
+        }
 
-        return redirect()->route('document.own');
+        return redirect()->route('document.edit', ['document' => $document]);
+    }
+
+    public function downloadFile(Document $document){
+
+        return response()->download(storage_path('app/public/'.$document->file));
+    }
+
+    public function showFile(Document $document){
+
+        $patch = storage_path('app/public/xRLa4ehbPEOUJWVIvU0epRmDZusmd8eJTkMzLDvI.docx');
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $objReader = \PhpOffice\PhpWord\IOFactory::createReader('Word2007');
+        $phpWord = $objReader->load($patch);
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'HTML');
+        $objWriter->save('test.html');
+
+        return redirect()->route('home');
     }
 
     /**

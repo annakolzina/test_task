@@ -6,6 +6,7 @@ use App\Models\Document;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
@@ -36,6 +37,13 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('update-user', function (User $user){
+            if($user->role==1 || $user->id == Auth::id()){
+                return Response::allow();
+            }
+            return Response::deny('Недостаточно прав');
+        });
+
+        Gate::define('c-user', function (User $user){
             if($user->role==1){
                 return Response::allow();
             }

@@ -13,7 +13,7 @@ class Document extends Model
 
     use HasFactory;
 
-    public function scopeDocuments($query, $value = null, $type = null)
+    public function scopeOwn($query, $value = null, $type = null)
     {
         if($value== null && $type==null){
             return $query->where('author', Auth::id());

@@ -30,7 +30,9 @@
                         <td><p>{{$document->title}}</p></td>
                     @endcan
                     <td>{{$document->created_at}}</td>
-                    <td><a href="{{'storage/'.$document->file}}"><span class="bi-download"></span></a></td>
+                    <td>
+                        <a href="{{route('document.download', ['document' => $document])}}"><i class="bi-download"></i></a>
+                    </td>
                     @if($my == 2)
                         <td>{{$document->user->name}}</td>
                     @endif

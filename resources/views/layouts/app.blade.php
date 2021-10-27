@@ -20,8 +20,8 @@
             <div class="container">
                 @if(\Illuminate\Support\Facades\Auth::check())
                     <a class="navbar-brand" href="{{route('document.create')}}">Добавить документ</a>
-                    <a class="navbar-brand" href="{{route('document.own', ['my' => 1])}}">Мои документы</a>
-                    <a class="navbar-brand" href="{{route('document.own')}}">Общие документы</a>
+                    <a class="navbar-brand" href="{{route('document.many', ['my' => 1])}}">Мои документы</a>
+                    <a class="navbar-brand" href="{{route('document.many')}}">Общие документы</a>
                     @if(\Illuminate\Support\Facades\Auth::user()->role == 1)
                         <a class="navbar-brand" href="{{route('user.index')}}">Пользователи</a>
                     @endif
@@ -63,6 +63,7 @@
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Выйти') }}
                                     </a>
+                                    <a class="dropdown-item" href="{{route('user.edit', ['user' => \App\Models\User::find(\Illuminate\Support\Facades\Auth::id())])}}">Редактировать</a>
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
@@ -79,10 +80,5 @@
             @yield('content')
         </main>
     </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.3/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
 </body>
 </html>

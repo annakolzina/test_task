@@ -16,8 +16,10 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware' => 'auth'], function (){
 
     Route::get('/document/search/{my?}', [App\Http\Controllers\DocumentController::class, 'search'])->name('document.search');
-    Route::get('/document/own/{my?}/{value?}/{type?}', [App\Http\Controllers\DocumentController::class, 'allFromUser'])->name('document.own');
+    Route::get('/document/many/{my?}/{value?}/{type?}', [App\Http\Controllers\DocumentController::class, 'allFromUser'])->name('document.many');
     Route::get('/user/search', [App\Http\Controllers\UserController::class, 'search'])->name('user.search');
+    Route::get('/document/sh/{document}', [App\Http\Controllers\DocumentController::class, 'showFile'])->name('document.sh');
+    Route::get('/document/download/{document}', [App\Http\Controllers\DocumentController::class, 'downloadFile'])->name('document.download');
     Route::resource('/document', 'DocumentController');
     Route::resource('/user', 'UserController');
 

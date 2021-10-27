@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -17,7 +19,7 @@ class UserController extends Controller
     {
         $users = User::paginate(5);
 
-        return view('pages.users', [
+        return view('pages.user.users', [
             'users' => $users,
         ]);
     }
@@ -29,7 +31,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('pages.user.create');
     }
 
     /**
@@ -40,7 +42,21 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|min:2|max:100',
+            'email' => 'required|email|unique:users,id',
+            'password' => 'min:8|max:100',
+            'role' => 'nullable'
+        ]);
 
+        DB::insert('insert into users (name, email, password, role) values(?, ?, ?, ?)',[
+                $request->name,
+                $request->email,
+                Hash::make($request->password),
+                ($request->role == 'on') ? 1 : 0,
+            ]);
+
+        return redirect()->route('user.index');
     }
 
     /**
@@ -63,14 +79,14 @@ class UserController extends Controller
     public function edit(User $user)
     {
         Gate::authorize('update-user', [$user]);
-        return view('pages.user.form', [
+        return view('pages.user.edit', [
             'user' => $user
         ]);
     }
 
     public function search(Request $request){
 
-        return view('pages.users', [
+        return view('pages.user.users', [
             'users' => User::where('name', 'LIKE', "%{$request->value}%")->paginate(5),
         ]);
     }
@@ -86,17 +102,19 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => 'required|min:2|max:100',
-            'email' => 'nullable|email',
+            'email' => 'nullable|email|unique:users,id,'.$user->id,
             'role' => 'nullable'
         ]);
 
-        $user->update([
+        if($user->update([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => false
-        ]);
+            'role' => ($request->role == 'on') ? 1 : 0,
+        ])){
+            return redirect()->route('home');
+        }
 
-        return redirect()->route('user.index');
+        return redirect()->route('user.edit', ['user' => $user]);
     }
 
     /**
