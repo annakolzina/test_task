@@ -1,4 +1,4 @@
-<form method="GET" action="{{ route($route[0], ['my' => $own[0]]) }}">
+<form method="GET" action="{{ route($route[0], ['class' => $value[0]]) }}">
     @csrf
     <div class="container">
         <div class="form-group row">

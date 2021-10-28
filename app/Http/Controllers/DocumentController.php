@@ -11,40 +11,35 @@ use PhpOffice\PhpWord\PhpWord;
 
 class DocumentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         //
     }
 
-    public function search(Request $request, $my = 2){
+    public function search(Request $request, $class = 2){
 
-        if($my == 1)
+        if($class == 1)
             $documents = Document::own()->where('title', 'LIKE', "%{$request->value}%")->paginate(5);
         else
             $documents = Document::many()->where('title', 'LIKE', "%{$request->value}%")->paginate(5);
 
         return view('pages.document.documents', [
             'documents' => $documents,
-            'my' => $my
+            'class' => $class
         ]);
     }
 
 
-    public function allFromUser($my = 2, $value = null, $type = null){
+    public function allFromUser($class = 2, $value = null, $type = null){
 
-        if($my == 1)//документы конкретного польвователя
+        if($class == 1)//документы конкретного польвователя
             $documents = Document::own($value, $type)->paginate(5);
         else
             $documents = Document::many($value, $type)->paginate(5);
 
         return view('pages.document.documents', [
             'documents' => $documents,
-            'my' => $my
+            'class' => $class
         ]);
     }
 
@@ -68,7 +63,7 @@ class DocumentController extends Controller
     {
         $request->validate([
             'title' => 'required|min:5|max:100',
-            'file' => 'required|file',
+            'file' => 'required|file|mimes:doc',
             'author' => 'nullable'
         ]);
 
@@ -94,7 +89,9 @@ class DocumentController extends Controller
      */
     public function show(Document $document)
     {
-        //
+        return view('pages.document.show', [
+            'document' => $document
+        ]);
     }
 
     /**
@@ -122,8 +119,7 @@ class DocumentController extends Controller
     {
         $request->validate([
             'title' => 'required|min:5|max:100',
-            'file' => 'nullable',
-            'author' => 'nullable'
+            'file' => 'nullable|file|mimes:doc',
         ]);
 
         if($document->update([
@@ -140,20 +136,8 @@ class DocumentController extends Controller
     public function downloadFile(Document $document){
 
         return response()->download(storage_path('app/public/'.$document->file));
+
     }
-
-    public function showFile(Document $document){
-
-        $patch = storage_path('app/public/xRLa4ehbPEOUJWVIvU0epRmDZusmd8eJTkMzLDvI.docx');
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        $objReader = \PhpOffice\PhpWord\IOFactory::createReader('Word2007');
-        $phpWord = $objReader->load($patch);
-        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'HTML');
-        $objWriter->save('test.html');
-
-        return redirect()->route('home');
-    }
-
     /**
      * Remove the specified resource from storage.
      *

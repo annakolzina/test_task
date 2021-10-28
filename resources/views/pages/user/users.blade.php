@@ -11,6 +11,7 @@
                 <th scope="col">Имя</th>
                 <th scope="col">email</th>
                 <th scope="col">роль</th>
+                <th scope="col">просмотр</th>
             </tr>
             </thead>
             <tbody>
@@ -23,6 +24,9 @@
                     <td><a href="{{route('user.edit', ['user' => $user])}}">{{$user->name}}</a></td>
                     <td>{{$user->email}}</td>
                     <td>{{($user->role==1) ? 'администратор' : 'пользователь'}}</td>
+                    <td>
+                        <a href="{{route('user.show', ['user' => $user])}}"><i class="bi-eye"></i></a>
+                    </td>
                 </tr>
                 @php
                     $count++;

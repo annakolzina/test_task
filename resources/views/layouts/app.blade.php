@@ -20,7 +20,7 @@
             <div class="container">
                 @if(\Illuminate\Support\Facades\Auth::check())
                     <a class="navbar-brand" href="{{route('document.create')}}">Добавить документ</a>
-                    <a class="navbar-brand" href="{{route('document.many', ['my' => 1])}}">Мои документы</a>
+                    <a class="navbar-brand" href="{{route('document.many', ['class' => 1])}}">Мои документы</a>
                     <a class="navbar-brand" href="{{route('document.many')}}">Общие документы</a>
                     @if(\Illuminate\Support\Facades\Auth::user()->role == 1)
                         <a class="navbar-brand" href="{{route('user.index')}}">Пользователи</a>

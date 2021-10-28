@@ -43,7 +43,7 @@ class AuthServiceProvider extends ServiceProvider
             return Response::deny('Недостаточно прав');
         });
 
-        Gate::define('c-user', function (User $user){
+        Gate::define('show-user', function (User $user){
             if($user->role==1){
                 return Response::allow();
             }

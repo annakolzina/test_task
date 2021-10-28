@@ -3,16 +3,16 @@
 @section('content')
 
     <div class="container">
-        @include('panels.search', ['route' => ['document.search'], 'own' => $own = [$my]])
-        @include('panels.sort', $own = [$my])
+        @include('panels.search', ['route' => ['document.search'], 'class' => $value = [$class]])
+        @include('panels.sort', $value = [$class])
         <table class="table table-hover mt-4">
             <thead>
                 <tr>
                     <th scope="col">№</th>
                     <th scope="col">Название</th>
                     <th scope="col">Дата</th>
-                    <th scope="col">Файл</th>
-                    @if($own[0] == 2)
+                    <th scope="col" colspan="2">Действия</th>
+                    @if($value[0] == 2)
                         <th scope="col">Автор</th>
                     @endif
                 </tr>
@@ -33,7 +33,10 @@
                     <td>
                         <a href="{{route('document.download', ['document' => $document])}}"><i class="bi-download"></i></a>
                     </td>
-                    @if($my == 2)
+                    <td>
+                        <a href="{{route('document.show', ['document' => $document])}}"><i class="bi-eye"></i></a>
+                    </td>
+                    @if($class == 2)
                         <td>{{$document->user->name}}</td>
                     @endif
                 </tr>
